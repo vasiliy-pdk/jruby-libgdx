@@ -5,6 +5,6 @@ config = LwjglApplicationConfiguration.new()
 config.title = 'JRuby libGDX Hello World Example'
 config.width = 800
 config.height = 600
-config.resizable = false
+config.resizable = true
 
 LwjglApplication.new(Game.new, config)
