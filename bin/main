@@ -1,5 +1,7 @@
-require_relative './lib/libgdx.rb'
-require_relative './game.rb'
+#!/usr/bin/env ruby
+
+require_relative '../lib/libgdx.rb'
+require_relative '../lib/game.rb'
 
 config = LwjglApplicationConfiguration.new()
 config.title = 'JRuby libGDX Hello World Example'
