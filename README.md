@@ -15,3 +15,18 @@ Creating jruby-libgdx.jar
 vasyl@xps956:~/code/jruby-libgdx$ java -jar jruby-libgdx.jar 
 AL lib: (EE) alc_cleanup: 1 device not closed
 ```
+
+#### Trying compiling with gradle
+
+```
+vasyl@xps956:~/code/jruby-libgdx$ jrubyc bin/main 
+locate jruby.jar
+# pick the relevant: /usr/share/rvm/rubies/jruby-9.2.6.0/lib/jruby.jar 
+java -cp .:/usr/share/rvm/rubies/jruby-9.2.6.0/lib/jruby.jar bin.main
+# Works!
+```
+
+##### How to build?
+
+https://libgdx.badlogicgames.com/documentation/gettingstarted/Setting%20Up.html
+
