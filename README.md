@@ -1,32 +1,38 @@
 # Objectives
 
+* Write a game via TDD
+* Create a gem automating - fetching libgdx, building
+* Build and deploy HTML5 app
 * Make an exe file that can be run by a user
-* Build an HTML5 app
+* Build an android app
 
-# Log
+# Making a desktop distribution
 
-#### Tried to make an executable jar file with warble. The file is generated, but I can't run it: 
+How to create a standalone executable jar file? 
 
-```
-vasyl@xps956:~/code/jruby-libgdx$ warble
-No executable matching config.jar_name found, using bin/main
-rm -f jruby-libgdx.jar
-Creating jruby-libgdx.jar
-vasyl@xps956:~/code/jruby-libgdx$ java -jar jruby-libgdx.jar 
-AL lib: (EE) alc_cleanup: 1 device not closed
-```
-
-#### Trying compiling with gradle
+https://github.com/jruby/jruby/wiki/StandaloneJarsAndClasses#standalone-executable-jar-files 
 
 ```
-vasyl@xps956:~/code/jruby-libgdx$ jrubyc bin/main 
-locate jruby.jar
-# pick the relevant: /usr/share/rvm/rubies/jruby-9.2.6.0/lib/jruby.jar 
-java -cp .:/usr/share/rvm/rubies/jruby-9.2.6.0/lib/jruby.jar bin.main
-# Works!
+vasyl@xps956:~/code/jruby-libgdx$ cp /usr/share/rvm/rubies/jruby-9.2.6.0/lib/jruby.jar ./bin/myapp.jar # initial copy of jRuby
+vasyl@xps956:~/code/jruby-libgdx/bin$ jar ufe myapp.jar org.jruby.JarBootstrapMain jar-bootstrap.rb ../lib/ # specify the entry script and add directory with sources
+vasyl@xps956:~/code/jruby-libgdx/bin$ java -jar myapp.jar # Run
+Starting MyGame
+[FPSLogger] fps: 0
+[FPSLogger] fps: 60
+
+# Works! Managed to launch it on Windows too!
 ```
 
-##### How to build?
+## Next
 
-https://libgdx.badlogicgames.com/documentation/gettingstarted/Setting%20Up.html
+### How to pack assets?
 
+I suppose, just add `../assets/` into the build command. That should be it.
+
+### How to pack Gems?
+
+
+### How to make stand-alone executable that includes java?
+
+Why: So users don't have to install java.
+How: I have jar file, which I could pack with jre and distribute. http://launch4j.sourceforge.net/docs.html
