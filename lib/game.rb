@@ -1,6 +1,16 @@
 java_import com.badlogic.gdx.graphics.GL20
-java_import com.badlogic.gdx.graphics.OrthographicCamera
-java_import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+java_import com.badlogic.gdx.graphics.PerspectiveCamera
+java_import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder
+java_import com.badlogic.gdx.graphics.g3d.Material
+java_import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
+java_import com.badlogic.gdx.graphics.Color
+java_import com.badlogic.gdx.graphics.VertexAttributes
+java_import com.badlogic.gdx.graphics.g3d.ModelInstance
+java_import com.badlogic.gdx.graphics.g3d.ModelBatch
+java_import com.badlogic.gdx.graphics.g3d.Environment
+java_import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
+java_import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
+
 
 class Game
   include ApplicationListener
@@ -8,25 +18,29 @@ class Game
   def create
     puts 'Starting MyGame'
     @fps_logger = FPSLogger.new
-    @camera = OrthographicCamera.new
-    camera.set_to_ortho false
 
-    @shape_renderer = ShapeRenderer.new
-    @circle = MovingCircle.new
+    @environment = init_environment
+    @camera = init_camera
+    @camera_controller = init_camera_controller
+
+    @model_builder = ModelBuilder.new
+    @model = model_builder.createBox(5.0, 5.0, 5.0, 
+      Material.new(ColorAttribute.create_diffuse(Color::GREEN)),
+      VertexAttributes::Usage::Position | VertexAttributes::Usage::Normal
+    )
+    @model_instance = ModelInstance.new @model
+
+    @model_batch = ModelBatch.new
   end
 
   def render
+    Gdx.gl.gl_viewport(0, 0, Gdx.graphics.width(), Gdx.graphics.height())
     Gdx.gl.gl_clear_color(0.25, 0.25, 0.25, 1)
-    Gdx.gl.gl_clear(GL20::GL_COLOR_BUFFER_BIT)
+    Gdx.gl.gl_clear(GL20::GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT)
 
-    @circle.update
-
-    camera.update
-    shape_renderer.set_projection_matrix camera.combined
-    shape_renderer.begin(ShapeRenderer::ShapeType::Filled)
-    shape_renderer.set_color(1, 1, 0, 1)
-    shape_renderer.circle(@circle.x, @circle.y, @circle.diameter)
-    shape_renderer.end
+    model_batch.begin camera
+    model_batch.render model_instance, environment
+    model_batch.end
 
     fps_logger.log
   end
@@ -41,26 +55,33 @@ class Game
   end
 
   def dispose
-    shape_renderer.dispose
+    model_batch.dispose
+    model.dispose
     puts 'Bye'
   end
 
   private
 
-  attr_reader :fps_logger, :camera, :shape_renderer
-end
+  attr_reader :fps_logger, :camera, :model, :model_builder, :model_batch, :model_instance, :environment
 
-class MovingCircle
-  attr_reader :x, :y, :diameter
-
-  def initialize(x = 0, y = 0, diameter = 20)
-    @x = x
-    @y = y
-    @diameter = diameter
+  def init_camera
+    PerspectiveCamera.new(70, Gdx.graphics.width(), Gdx.graphics.height()).tap do |camera|
+      camera.position.set(10.0, 10.0, 10.0)
+      camera.look_at(0, 0, 0)
+      camera.near = 1.0
+      camera.far = 300.0
+      camera.update
+    end
   end
-  
-  def update
-    @x += 1
-    @y += 1
+
+  def init_camera_controller
+    CameraInputController.new(camera).tap { |controller| Gdx.input.setInputProcessor controller }
+  end
+
+  def init_environment
+    Environment.new.tap do |env|
+      env.set ColorAttribute.new(ColorAttribute::AmbientLight, 0.4, 0.4, 0.4, 1.0)
+      env.add DirectionalLight.new.set(0.8, 0.8, 0.8, -1.0, -0.8, -0.2)
+    end
   end
 end
