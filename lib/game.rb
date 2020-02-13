@@ -10,7 +10,7 @@ java_import com.badlogic.gdx.graphics.g3d.ModelBatch
 java_import com.badlogic.gdx.graphics.g3d.Environment
 java_import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
 java_import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
-
+require_relative './color_builder'
 
 class Game
   include ApplicationListener
@@ -25,7 +25,7 @@ class Game
 
     @model_builder = ModelBuilder.new
     @model = model_builder.createBox(5.0, 5.0, 5.0, 
-      Material.new(ColorAttribute.create_diffuse(Color::GREEN)),
+      Material.new(ColorAttribute.create_diffuse(ColorBuilder.from_int_rgb(224, 17, 95))),
       VertexAttributes::Usage::Position | VertexAttributes::Usage::Normal
     )
     @model_instance = ModelInstance.new @model
@@ -35,7 +35,8 @@ class Game
 
   def render
     Gdx.gl.gl_viewport(0, 0, Gdx.graphics.width(), Gdx.graphics.height())
-    Gdx.gl.gl_clear_color(0.25, 0.25, 0.25, 1)
+    r, g, b = ColorBuilder.rgb_from_hex '032D1D'
+    Gdx.gl.gl_clear_color(r, g, b, 1)
     Gdx.gl.gl_clear(GL20::GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT)
 
     model_batch.begin camera
